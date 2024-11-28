@@ -1,21 +1,15 @@
 import pandas as pd
+
+from scipy import stats
+
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# Function to count outliers using the IQR method
-def count_outliers(data, column):
-    """
-    
-    Retorna um dataframe com os outliers
+from statistical import count_outliers
 
-    """
-    Q1 = data[column].quantile(0.25)
-    Q3 = data[column].quantile(0.75)
-    IQR = Q3 - Q1
-    lower_bound = Q1 - 1.5 * IQR
-    upper_bound = Q3 + 1.5 * IQR
-    outliers = data[(data[column] < lower_bound) | (data[column] > upper_bound)]
-    return outliers.shape[0]
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
 
 def plot_categorical_relationship(df, cat_var1, cat_var2):
     """
@@ -47,33 +41,9 @@ def plot_categorical_relationship(df, cat_var1, cat_var2):
     
     plt.show()
 
-# Exemplo de uso:
-# df é seu DataFrame contendo as variáveis categóricas.
-# plot_categorical_relationship(df, 'Sex', 'Survived')
-
-
-
-def count_outliers(df, column):
-    """
-    Conta o número de outliers em uma coluna utilizando o método IQR (Intervalo Interquartil).
-    
-    Parameters:
-        df (pd.DataFrame): DataFrame contendo os dados.
-        column (str): Nome da coluna para a qual contar os outliers.
-        
-    Returns:
-        int: Número de outliers encontrados.
-    """
-    Q1 = df[column].quantile(0.25)
-    Q3 = df[column].quantile(0.75)
-    IQR = Q3 - Q1
-    
-    lower_bound = Q1 - 1.5 * IQR
-    upper_bound = Q3 + 1.5 * IQR
-    
-    return ((df[column] < lower_bound) | (df[column] > upper_bound)).sum()
-
-
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
 
 def plot_boxplots_with_outliers(df, columns):
     """
@@ -95,12 +65,9 @@ def plot_boxplots_with_outliers(df, columns):
     plt.tight_layout()
     plt.show()
 
-# Exemplo de uso:
-# df_train é seu DataFrame
-# columns_to_analyze = ['Age', 'SibSp', 'Parch', 'Fare']
-# plot_boxplots_with_outliers(df_train, columns_to_analyze)
-
-
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
 
 def plot_correlation_heatmap(df):
     """
@@ -118,32 +85,9 @@ def plot_correlation_heatmap(df):
     plt.title('Correlação entre Variáveis Numéricas')
     plt.show()
 
-# Exemplo de uso:
-# df_train é seu DataFrame
-# plot_correlation_heatmap(df_train)
-
-
-def count_outliers(df, column):
-    """
-    Conta o número de outliers em uma coluna utilizando o método IQR (Intervalo Interquartil).
-    
-    Parameters:
-        df (pd.DataFrame): DataFrame contendo os dados.
-        column (str): Nome da coluna para a qual contar os outliers.
-        
-    Returns:
-        tuple: (número de outliers, limite inferior, limite superior)
-    """
-    Q1 = df[column].quantile(0.25)
-    Q3 = df[column].quantile(0.75)
-    IQR = Q3 - Q1
-    
-    lower_bound = Q1 - 1.5 * IQR
-    upper_bound = Q3 + 1.5 * IQR
-    
-    outlier_count = ((df[column] < lower_bound) | (df[column] > upper_bound)).sum()
-    
-    return outlier_count, lower_bound, upper_bound
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
 
 def plot_boxplots_hist_kde(df, columns):
     """
@@ -181,8 +125,9 @@ def plot_boxplots_hist_kde(df, columns):
     plt.tight_layout()
     plt.show()
 
-
-
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
 
 def plot_survival_probability(df, category, target):
     """
@@ -208,5 +153,100 @@ def plot_survival_probability(df, category, target):
     plt.tight_layout()
     plt.show()
 
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
 
+def plot_categorical_relationship(df, cat_var1, cat_var2, hue=None):
+    """
+    Plota barplots para duas variáveis categóricas, com a segunda variável categórica representada em colunas.
     
+    Parameters:
+        df (pd.DataFrame): O dataframe contendo as variáveis.
+        cat_var1 (str): Nome da primeira variável categórica.
+        cat_var2 (str): Nome da segunda variável categórica.
+        hue (str, optional): Nome da variável a ser usada para colorir as barras. Padrão é None.
+    """
+    
+    # Verifica se as variáveis estão no DataFrame
+    if cat_var1 not in df.columns or cat_var2 not in df.columns:
+        raise ValueError(f"As variáveis {cat_var1} ou {cat_var2} não estão no DataFrame.")
+
+    # Cria o gráfico usando catplot
+    plt.figure(figsize=(12, 6))
+    sns.catplot(
+        data=df, 
+        x=cat_var1, 
+        kind='count', 
+        col=cat_var2,
+        hue=hue,  # Adiciona hue como opcional
+        height=4, 
+        aspect=0.7
+    )
+    
+    plt.subplots_adjust(top=0.8)
+    plt.suptitle(f'Relação entre {cat_var1} e {cat_var2}', fontsize=16)
+    
+    plt.show()
+
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
+
+def plot_correlation_heatmap(df):
+    """
+    Plota um mapa de calor da correlação entre variáveis numéricas no DataFrame.
+    
+    Parameters:
+        df (pd.DataFrame): DataFrame contendo os dados.
+    """
+    # Calcula a correlação entre as variáveis numéricas
+    correlation_matrix = df.select_dtypes(include=['number']).corr()
+
+    # Cria o mapa de calor
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f', square=True, cbar_kws={"shrink": .8})
+    plt.title('Correlação entre Variáveis Numéricas')
+    plt.show()
+
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
+
+def correlation_analysis(df, var1, var2, alpha=0.05):
+    """
+    Calcula os coeficientes de correlação de Pearson e Spearman entre duas variáveis numéricas
+    e interpreta os resultados com base no nível de significância.
+
+    Parameters:
+        df (pd.DataFrame): O DataFrame que contém os dados.
+        var1 (str): Nome da primeira variável numérica.
+        var2 (str): Nome da segunda variável numérica.
+        alpha (float, opcional): Nível de significância para os testes. Padrão é 0.05.
+
+    Returns:
+        dict: Um dicionário contendo os coeficientes de correlação, p-valores e a interpretação.
+    """
+    results = {}
+
+    # Coeficiente de Correlação de Pearson
+    pearson_corr, pearson_p_value = stats.pearsonr(df[var1], df[var2])
+    results['Pearson Correlation'] = pearson_corr
+    results['Pearson P-value'] = pearson_p_value
+
+    if pearson_p_value < alpha:
+        results['Pearson Test'] = "Rejeita a hipótese nula: as variáveis não são independentes."
+    else:
+        results['Pearson Test'] = "Não se rejeita a hipótese nula: as variáveis são independentes."
+
+    # Coeficiente de Correlação de Spearman
+    spearman_corr, spearman_p_value = stats.spearmanr(df[var1], df[var2])
+    results['Spearman Correlation'] = spearman_corr
+    results['Spearman P-value'] = spearman_p_value
+
+    if spearman_p_value < alpha:
+        results['Spearman Test'] = "Rejeita a hipótese nula: as variáveis não são independentes."
+    else:
+        results['Spearman Test'] = "Não se rejeita a hipótese nula: as variáveis são independentes."
+
+    return results

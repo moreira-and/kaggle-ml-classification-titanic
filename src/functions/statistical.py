@@ -1,6 +1,13 @@
 import pandas as pd
+
+from scipy import stats
+
 from sklearn.preprocessing import LabelEncoder
 from sklearn.feature_selection import chi2
+
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
 
 def chi_squared_test(df, target_variable):
     """
@@ -31,8 +38,35 @@ def chi_squared_test(df, target_variable):
     
     return p_values_df
 
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
 
+def count_outliers(df, column):
+    """
+    Conta o número de outliers em uma coluna utilizando o método IQR (Intervalo Interquartil).
+    
+    Parameters:
+        df (pd.DataFrame): DataFrame contendo os dados.
+        column (str): Nome da coluna para a qual contar os outliers.
+        
+    Returns:
+        tuple: (número de outliers, limite inferior, limite superior)
+    """
+    Q1 = df[column].quantile(0.25)
+    Q3 = df[column].quantile(0.75)
+    IQR = Q3 - Q1
+    
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    
+    outlier_count = ((df[column] < lower_bound) | (df[column] > upper_bound)).sum()
+    
+    return outlier_count, lower_bound, upper_bound
 
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
 
 def correlation_analysis(df, var1, var2, alpha=0.05):
     """

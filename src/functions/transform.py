@@ -3,6 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
+
 def analyze_thresholds(df, numeric_col, target_col, n_clusters=4, plot_title='Taxa de Sobrevivência por Grupo', cluster_plot_title='Clusters de Idade e Sobrevivência'):
     """
     Analyzes the impact of a numeric variable on a target variable using K-means clustering to create thresholds.
@@ -56,8 +60,9 @@ def analyze_thresholds(df, numeric_col, target_col, n_clusters=4, plot_title='Ta
     
     return thresholds, survival_rates
 
-
-
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
 
 # Função para categorizar os dados com base nos thresholds
 def categorize_col(df, col, thresholds):
